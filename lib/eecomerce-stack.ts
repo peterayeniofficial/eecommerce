@@ -12,6 +12,7 @@ export class EecomerceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Provision Dynamo DB
     const productTable = new Table(this, 'product', {
       partitionKey: {
         name: 'id',
@@ -35,11 +36,13 @@ export class EecomerceStack extends cdk.Stack {
       runtime: Runtime.NODEJS_14_X
     }
 
+    // Provision LambdaFunction
     const productFunction = new NodejsFunction(this, 'productLambdaFunction', {
       entry: join(__dirname, `/../src/product/index.js`),
       ...nodeJsFunctionProps
     })
 
+    // grant access to LambdaFunction
     productTable.grantReadWriteData(productFunction)
 
     // product
@@ -51,6 +54,7 @@ export class EecomerceStack extends cdk.Stack {
     // PUT /product/{id}
     // DELETE /product/{id}
 
+    // Provision APIGateway
     const apgw = new LambdaRestApi(this, 'productApi', {
       restApiName: 'Product Service',
       handler: productFunction,
