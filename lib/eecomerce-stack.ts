@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -40,5 +41,30 @@ export class EecomerceStack extends cdk.Stack {
     })
 
     productTable.grantReadWriteData(productFunction)
+
+    // product
+    // GET /product
+    // POST /product
+
+    // single product
+    // GET /product/{id}
+    // PUT /product/{id}
+    // DELETE /product/{id}
+
+    const apgw = new LambdaRestApi(this, 'productApi', {
+      restApiName: 'Product Service',
+      handler: productFunction,
+      proxy: false
+    })
+
+    const product = apgw.root.addResource('product')
+    product.addMethod('GET')
+    product.addMethod('POST')
+
+    const singleProduct = product.addResource('{id}')
+    singleProduct.addMethod('Get')
+    singleProduct.addMethod('PUT')
+    singleProduct.addMethod('DELETE')
+
   }
 }
