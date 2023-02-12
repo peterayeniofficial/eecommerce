@@ -3,6 +3,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { EcommerceDatabase } from "./database";
 import { EcommerceMicroservice } from "./microservices";
+import { EccommerceEventBus } from "./eventbus";
 
 export class EecomerceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -18,5 +19,12 @@ export class EecomerceStack extends cdk.Stack {
       productMicroservice: microServices.productMicroservice,
       bascketMicroservice: microServices.basketMicroservice
     });
+
+    const eventBus = new EccommerceEventBus(this, "EventBus", {
+      publisherFunction: microServices.basketMicroservice,
+      targetFunction: // todo
+    })
+
+
   }
 }
