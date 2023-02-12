@@ -57,21 +57,25 @@ export class EcommerceMicroservice extends Construct {
     return productFunction;
   }
 
-  private createBasketFunction(productTable: ITable): NodejsFunction {
+  private createBasketFunction(basketTable: ITable): NodejsFunction {
     const basketFunctionProps: NodejsFunctionProps = {
       bundling: {
         externalModules: ["aws-sdk"],
       },
       environment: {
-        PRIMARY_KEY: "id",
-        DYNAMODB_TABLE_NAME: productTable.tableName,
+        PRIMARY_KEY: "username",
+        DYNAMODB_TABLE_NAME: basketTable.tableName,
+        EVENT_SOURCE: "com.eco.basket.checkoutbasket",
+        EVENT_DETAILTYPE: "CheckoutBasket",
+        EVENT_BUSNAME: "EccommerceEventBus"
+
       },
       runtime: Runtime.NODEJS_14_X,
     };
 
     // Provision LambdaFunction
-    const basketFunction = new NodejsFunction(this, "productLambdaFunction", {
-      entry: join(__dirname, `/../src/product/index.js`),
+    const basketFunction = new NodejsFunction(this, "basketLambdaFunction", {
+      entry: join(__dirname, `/../src/basket/index.js`),
       ...basketFunctionProps,
     });
 
