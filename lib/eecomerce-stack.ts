@@ -13,6 +13,7 @@ export class EecomerceStack extends cdk.Stack {
     const microServices = new EcommerceMicroservice(this, "Microservices", {
       productTable: database.productTable,
       basketTable: database.basketTable,
+      orderTable: database.orderTable
     });
 
     const apiGateway = new EcommerceApiGateway(this, "ApiGateway", {
@@ -22,7 +23,7 @@ export class EecomerceStack extends cdk.Stack {
 
     const eventBus = new EccommerceEventBus(this, "EventBus", {
       publisherFunction: microServices.basketMicroservice,
-      targetFunction: // todo
+      targetFunction: microServices.orderMicroservice
     })
 
 
