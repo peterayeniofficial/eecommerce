@@ -5,6 +5,7 @@ import { Construct } from "constructs";
 export interface EcommerceApiGatewayProps {
   productMicroservice: IFunction;
   bascketMicroservice: IFunction;
+  orderMicroservice: IFunction
 }
 
 export class EcommerceApiGateway extends Construct {
@@ -13,8 +14,10 @@ export class EcommerceApiGateway extends Construct {
 
     // Product api gateway
     this.createProductAPI(props.productMicroservice);
-    // Product api gateway
+    // Basket api gateway
     this.createBasketAPI(props.bascketMicroservice);
+    // Orer api gateway
+    this.createOrderAPI(props.orderMicroservice)
   }
   private createProductAPI(productMicroservice: IFunction) {
     const productAPIGateway = new LambdaRestApi(this, "productApi", {
@@ -50,5 +53,20 @@ export class EcommerceApiGateway extends Construct {
 
     const basketCheckout = basket.addResource("checkout");
     basketCheckout.addMethod("POST");
+  }
+
+  private createOrderAPI(orderMicroservice: IFunction) {
+    const orderAPIGateway = new LambdaRestApi(this, "orderApi", {
+      restApiName: "Order Service",
+      handler: orderMicroservice,
+      proxy: false,
+    });
+
+    const order = orderAPIGateway.root.addResource("order");
+    order.addMethod("GET");
+
+    const singleOrder = order.addResource("{username}");
+    singleOrder.addMethod("Get");
+    return singleOrder
   }
 }
