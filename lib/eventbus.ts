@@ -1,11 +1,13 @@
+import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { EventBus, Rule } from "aws-cdk-lib/aws-events";
-import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
+import { LambdaFunction, SqsQueue } from "aws-cdk-lib/aws-events-targets";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
 interface EccommerceEventBusProps {
   publisherFunction: IFunction;
-  targetFunction: IFunction;
+  // targetFunction: IFunction;
+  targetQueue: IQueue
 }
 
 export class EccommerceEventBus extends Construct {
@@ -28,7 +30,8 @@ export class EccommerceEventBus extends Construct {
       ruleName: "CheckoutBasketRule",
     });
 
-    checkoutBasketRule.addTarget(new LambdaFunction(props.targetFunction));
+    // checkoutBasketRule.addTarget(new LambdaFunction(props.targetFunction));
+    checkoutBasketRule.addTarget(new SqsQueue(props.targetQueue));
     bus.grantPutEventsTo(props.publisherFunction)
   }
 }

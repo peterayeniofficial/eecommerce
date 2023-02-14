@@ -1,3 +1,4 @@
+import { EcommerceQueque } from './queue';
 import { EcommerceApiGateway } from "./apigateway";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
@@ -22,11 +23,17 @@ export class EecomerceStack extends cdk.Stack {
       orderMicroservice: microServices.orderMicroservice
     });
 
-    const eventBus = new EccommerceEventBus(this, "EventBus", {
-      publisherFunction: microServices.basketMicroservice,
-      targetFunction: microServices.orderMicroservice
+    const queue = new EcommerceQueque(this, 'Queue',{
+      consumer: microServices.orderMicroservice
     })
 
+    const eventBus = new EccommerceEventBus(this, "EventBus", {
+      publisherFunction: microServices.basketMicroservice,
+      // targetFunction: microServices.orderMicroservice
+      targetQueue: queue.orderQueue
+    })
+
+   
 
   }
 }
